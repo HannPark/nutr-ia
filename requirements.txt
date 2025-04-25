@@ -1,5 +1,5 @@
-semantic-kernel>=0.3.0 # Núcleo de la arquitectura para los agentes
-openai>=1.0.0 # Comunicación con los modelos de OpenAI
+semantic-kernel<= 0.3.13.dev0 # Núcleo de la arquitectura para los agentes
+openai<=0.29 # Comunicación con los modelos de OpenAI
 python-dotenv>=1.0.0 # Gestión de variables de entorno para las API keys
 pillow>=10.0.0 # Procesamiento de imágenes para el análisis de screenshots
 pydantic>=2.0.0 # Validación de datos y schemas JSON
