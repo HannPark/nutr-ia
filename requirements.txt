@@ -1,0 +1,19 @@
+semantic-kernel>=0.3.0 # Núcleo de la arquitectura para los agentes
+openai>=1.0.0 # Comunicación con los modelos de OpenAI
+python-dotenv>=1.0.0 # Gestión de variables de entorno para las API keys
+pillow>=10.0.0 # Procesamiento de imágenes para el análisis de screenshots
+pydantic>=2.0.0 # Validación de datos y schemas JSON
+fastapi>=0.100.0 # Si planeas exponer la solución como una API
+uvicorn>=0.23.0 # Servidor ASGI para FastAPI
+httpx>=0.24.0 # Para peticiones HTTP asíncronas
+numpy>=1.24.0  # Procesamiento de datos numéricos
+pandas>=2.0.0 # Para el procesamiento de datos nutricionales
+aiohttp>=3.8.0 # Para peticiones HTTP asíncronas
+python-dotenv # Para cargar variables de entorno desde un archivo .env
+
+# PARA IMPLEMENTAR API POSTERIORMENTE
+# fastapi>=0.100.0 # Para crear una API RESTful
+# uvicorn>=0.23.0 # Servidor ASGI para FastAPI
+# python-multipart>=0.0.6 # Para manejar archivos subidos
+# websockets>=11.0.3 # Para manejar conexiones WebSocket
+# cors>=1.0.1 # Para manejar CORS en FastAPI
