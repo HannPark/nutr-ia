@@ -15,14 +15,14 @@ class BaseAgent:
         self.kernel.add_chat_service(
             service_id=self.name,
             service=OpenAIChatCompletion(
-                model_name=self.model_name,
+                model_id=self.model_name,
                 api_key=api_key
             )
         )
         self.kernel.add_text_embedding_generation_service(
             service_id="embedding",
             service=OpenAITextEmbedding(
-                model_name=OpenAIConfig.EMBEDDING_MODEL,
+                model_id=OpenAIConfig.EMBEDDING_MODEL,
                 api_key=api_key
             )
         )
