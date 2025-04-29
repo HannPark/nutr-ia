@@ -20,13 +20,14 @@ class NutritionistAgent(BaseAgent):
         # Diagnosticar condición basado en datos del paciente
         context = sk.ContextVariables()
         context["patient_data"] = json.dumps(patient_data)
-        
-        result = await self.kernel.run_async(
+        context["kernel"] = self.kernel
+
+        skill_response = await self.kernel.run_async(
             self.skills["diagnose"],
             input_vars=context
         )
         
-        diagnosis = json.loads(result)
+        diagnosis = json.loads(skill_response.result)
         return diagnosis
     
     async def create_diet_plan(self, patient_data, diagnosis):
@@ -34,13 +35,14 @@ class NutritionistAgent(BaseAgent):
         context = sk.ContextVariables()
         context["patient_data"] = json.dumps(patient_data)
         context["diagnosis"] = json.dumps(diagnosis)
-        
-        result = await self.kernel.run_async(
+        context["kernel"] = self.kernel
+
+        skill_response = await self.kernel.run_async(
             self.skills["create_diet"],
             input_vars=context
         )
         
-        diet_plan = json.loads(result)
+        diet_plan = json.loads(skill_response.result)
         return diet_plan
     
     async def generate_exercise_routine(self, patient_data, diagnosis):
@@ -48,13 +50,14 @@ class NutritionistAgent(BaseAgent):
         context = sk.ContextVariables()
         context["patient_data"] = json.dumps(patient_data)
         context["diagnosis"] = json.dumps(diagnosis)
-        
-        result = await self.kernel.run_async(
+        context["kernel"] = self.kernel
+
+        skill_response = await self.kernel.run_async(
             self.skills["create_exercise_routine"],
             input_vars=context
         )
         
-        exercise_routine = json.loads(result)
+        exercise_routine = json.loads(skill_response.result)
         return exercise_routine
     
     async def process(self, patient_data_json):

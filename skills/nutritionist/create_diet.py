@@ -1,6 +1,10 @@
+from semantic_kernel import Kernel
 from semantic_kernel.skill_definition import sk_function, sk_function_context_parameter
 from semantic_kernel.orchestration.sk_context import SKContext
 import json
+
+from config.openai_config import OpenAIConfig
+from utils.openai_utils import OpenAIUtils
 
 class CreateDietSkill:
     @sk_function(
@@ -15,7 +19,7 @@ class CreateDietSkill:
         name="diagnosis",
         description="Diagnóstico nutricional en formato JSON"
     )
-    async def create_diet(self, context: SKContext) -> str:
+    def create_diet(self, context: SKContext) -> str:
         """
         Crea un plan de dieta personalizado basado en los datos del paciente y su diagnóstico.
         """
@@ -24,7 +28,9 @@ class CreateDietSkill:
             diagnosis = json.loads(context["diagnosis"])
         except json.JSONDecodeError:
             return json.dumps({"error": "Datos de entrada en formato inválido"})
-        
+
+        kernel: Kernel = context["kernel"]
+
         # Sistema: prompt para crear dieta
         prompt = f"""
         Eres un nutriólogo especializado en crear planes de alimentación personalizados.
@@ -46,27 +52,27 @@ class CreateDietSkill:
         6. Sea realista y sostenible a largo plazo
         
         Organiza el plan en un objeto JSON con la siguiente estructura:
-        {
+        {{
             "diet_type": string (tipo de dieta recomendada, ej: "hipocalórica equilibrada"),
             "daily_calories": float (calorías diarias recomendadas),
-            "macronutrients": {
+            "macronutrients": {{
                 "protein_percentage": float,
                 "carbs_percentage": float,
                 "fat_percentage": float
-            },
+            }},
             "meals": [
-                {
+                {{
                     "name": string (nombre de la comida, ej: "Desayuno"),
                     "time": string (horario recomendado),
                     "calories": float (proporción de calorías diarias),
                     "items": [lista de alimentos/platos recomendados]
-                }
+                }}
             ],
             "food_groups_to_prioritize": [lista de strings],
             "food_groups_to_limit": [lista de strings],
             "recommendations": string (recomendaciones generales),
             "supplements": [lista de suplementos recomendados, si aplica]
-        }
+        }}
         
         Incluye 5 comidas diarias (desayuno, media mañana, almuerzo, merienda, cena).
         Para cada comida, sugiere 3-5 opciones de alimentos o platos adecuados.
@@ -75,7 +81,7 @@ class CreateDietSkill:
         """
         
         # Obtener respuesta del modelo de lenguaje
-        response = await context.variables.kernel.memory.semantic_question(prompt)
+        response:str = OpenAIUtils.ai_semantic_question(kernel, prompt)
         
         # Procesar respuesta
         try:

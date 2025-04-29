@@ -1,6 +1,9 @@
+from semantic_kernel import Kernel
 from semantic_kernel.skill_definition import sk_function, sk_function_context_parameter
 from semantic_kernel.orchestration.sk_context import SKContext
 import json
+
+from utils.openai_utils import OpenAIUtils
 
 class CreateExerciseRoutineSkill:
     @sk_function(
@@ -15,7 +18,7 @@ class CreateExerciseRoutineSkill:
         name="diagnosis",
         description="Diagnóstico nutricional en formato JSON"
     )
-    async def create_exercise_routine(self, context: SKContext) -> str:
+    def create_exercise_routine(self, context: SKContext) -> str:
         """
         Crea una rutina de ejercicios personalizada basada en los datos del paciente y su diagnóstico.
         """
@@ -24,7 +27,9 @@ class CreateExerciseRoutineSkill:
             diagnosis = json.loads(context["diagnosis"])
         except json.JSONDecodeError:
             return json.dumps({"error": "Datos de entrada en formato inválido"})
-        
+
+        kernel: Kernel = context["kernel"]
+
         # Sistema: prompt para crear rutina de ejercicios
         prompt = f"""
         Eres un especialista en medicina deportiva y ejercicio físico.
@@ -46,12 +51,12 @@ class CreateExerciseRoutineSkill:
         6. Se pueda realizar principalmente en casa con equipo mínimo
         
         Organiza la rutina en un objeto JSON con la siguiente estructura:
-        {
+        {{
             "fitness_level": string (nivel recomendado: "principiante", "intermedio", "avanzado"),
             "sessions_per_week": int (número recomendado de sesiones),
             "description": string (descripción general de la rutina),
             "exercises": [
-                {
+                {{
                     "name": string (nombre del ejercicio),
                     "type": string (tipo: "cardiovascular", "fuerza", "flexibilidad", "equilibrio"),
                     "description": string (descripción breve),
@@ -59,17 +64,17 @@ class CreateExerciseRoutineSkill:
                     "frequency": string (frecuencia semanal),
                     "intensity": string (intensidad recomendada),
                     "progression": string (cómo progresar)
-                }
+                }}
             ],
-            "weekly_schedule": {
+            "weekly_schedule": {{
                 "monday": [lista de ejercicios recomendados],
                 "tuesday": [],
                 ...
                 "sunday": []
-            },
+            }},
             "precautions": [lista de precauciones a tomar],
             "goals": [lista de objetivos de la rutina]
-        }
+        }}
         
         Incluye máximo 5-7 ejercicios diferentes que sean complementarios entre sí.
         
@@ -77,7 +82,7 @@ class CreateExerciseRoutineSkill:
         """
         
         # Obtener respuesta del modelo de lenguaje
-        response = await context.variables.kernel.memory.semantic_question(prompt)
+        response:str = OpenAIUtils.ai_semantic_question(kernel, prompt)
         
         # Procesar respuesta
         try:

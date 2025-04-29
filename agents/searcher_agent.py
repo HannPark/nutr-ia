@@ -7,7 +7,7 @@ from skills.searcher.search_videos import SearchVideosSkill
 
 class SearcherAgent(BaseAgent):
     def __init__(self):
-        self.native_skills = {            
+        self.native_skills = {
             "search_recipes": SearchRecipesSkill(),
             "search_videos":SearchVideosSkill()
         }
@@ -19,13 +19,13 @@ class SearcherAgent(BaseAgent):
         context = sk.ContextVariables()
         context["diet_type"] = diet_type
         context["restrictions"] = json.dumps(restrictions)
-        
-        result = await self.kernel.run_async(
+        context["kernel"] = self.kernel
+        skill_response = await self.kernel.run_async(
             self.skills["search_recipes"],
             input_vars=context
         )
         
-        recipes = json.loads(result)
+        recipes = json.loads(skill_response.result)
         return recipes
     
     async def find_videos(self, condition, diet_type):
@@ -33,13 +33,13 @@ class SearcherAgent(BaseAgent):
         context = sk.ContextVariables()
         context["condition"] = condition
         context["diet_type"] = diet_type
-        
-        result = await self.kernel.run_async(
+        context["kernel"] = self.kernel
+        skill_response = await self.kernel.run_async(
             self.skills["search_videos"],
             input_vars=context
         )
         
-        videos = json.loads(result)
+        videos = json.loads(skill_response.result)
         return videos
     
     async def process(self, search_request):

@@ -4,6 +4,7 @@ from semantic_kernel.orchestration.sk_context import SKContext
 import json
 
 from config.openai_config import OpenAIConfig
+from utils.openai_utils import OpenAIUtils
 
 class GatherDataSkill:
     @sk_function(
@@ -14,20 +15,21 @@ class GatherDataSkill:
         name="input",
         description="Información inicial proporcionada por el paciente"
     )
-    async def gather_data(self, context: SKContext) -> str:
+    def gather_data(self, context: SKContext) -> str:
         """
         Recopila información nutricional completa del paciente basada en su input inicial.
         Realiza preguntas adicionales si es necesario y estructura los datos.
         """
         patient_input = context["input"]
         kernel: Kernel = context["kernel"]
+
         # Sistema: prompt para que el modelo actúe como un consultor nutricional
         prompt = f"""
         Eres un especialista en nutrición altamente calificado que está entrevistando a un paciente.
         Analiza la siguiente información proporcionada por el paciente:
-        
+
         "{patient_input}"
-        
+
         Extrae todos los datos nutricionales y físicos relevantes como:
         - Edad
         - Género
@@ -39,9 +41,9 @@ class GatherDataSkill:
         - Preferencias alimentarias
         - Condiciones médicas relevantes
         - Historial de dietas previas
-        
+
         Si la información no está completa, indica qué datos faltan que serían importantes preguntar.
-        
+
         Organiza la información en un objeto JSON con los siguientes campos:
         {{
             "age": int o null,
@@ -57,28 +59,23 @@ class GatherDataSkill:
             "previous_diets": [lista de strings] o [],
             "missing_info": [lista de strings con datos importantes que faltan] o []
         }}
-        
+
         Devuelve SOLO el objeto JSON, sin texto adicional.
         """
 
         # Obtener respuesta del modelo de lenguaje
         # response = await context.variables.kernel.memory.semantic_question(prompt)
-        completion_function = kernel.create_semantic_function(
-                prompt_template=prompt,
-                max_tokens=OpenAIConfig.MAX_TOKENS,
-                temperature=OpenAIConfig.TEMPERATURE
-            )
-        response = await completion_function.invoke_async()
-        
+        response:str = OpenAIUtils.ai_semantic_question(kernel, prompt)
+
         # Asegurar que la respuesta sea un JSON válido
         try:
             # Limpiar posibles marcadores de código que podrían haberse incluido
-            json_str = response.result.strip()
+            json_str = response.strip()
             if json_str.startswith("```json"):
                 json_str = json_str[7:]
             if json_str.endswith("```"):
                 json_str = json_str[:-3]
-            
+
             json_str = json_str.strip()
             result = json.loads(json_str)
             return json.dumps(result, indent=2)

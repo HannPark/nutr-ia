@@ -2,6 +2,8 @@ from semantic_kernel.skill_definition import sk_function, sk_function_context_pa
 from semantic_kernel.orchestration.sk_context import SKContext
 import json
 
+from utils.openai_utils import OpenAIUtils
+
 class SearchVideosSkill:
     @sk_function(
         description="Busca videos informativos relacionados con nutrición y condiciones específicas",
@@ -19,6 +21,7 @@ class SearchVideosSkill:
         """
         Busca y recomienda videos informativos relacionados con la condición del paciente y el tipo de dieta.
         """
+        kernel = context["kernel"]
         condition = context["condition"]
         diet_type = context["diet_type"]
         
@@ -46,7 +49,7 @@ class SearchVideosSkill:
         
         Organiza las recomendaciones en un array JSON con esta estructura:
         [
-            {
+            {{
                 "title": string (título del video),
                 "description": string (descripción del contenido),
                 "duration_minutes": int (duración aproximada),
@@ -55,14 +58,14 @@ class SearchVideosSkill:
                 "recommended_for": [tipos de pacientes que se beneficiarían],
                 "expertise_level": "beginner" | "intermediate" | "advanced",
                 "tags": [lista de etiquetas relevantes]
-            }
+            }}
         ]
         
         Devuelve SOLO el array JSON, sin texto adicional.
         """
         
         # Obtener respuesta del modelo de lenguaje
-        response = await context.variables.kernel.memory.semantic_question(prompt)
+        response:str = OpenAIUtils.ai_semantic_question(kernel, prompt)
         
         # Procesar respuesta
         try:

@@ -2,6 +2,8 @@ from semantic_kernel.skill_definition import sk_function, sk_function_context_pa
 from semantic_kernel.orchestration.sk_context import SKContext
 import json
 
+from utils.openai_utils import OpenAIUtils
+
 class SearchRecipesSkill:
     @sk_function(
         description="Busca recetas adecuadas para un tipo de dieta específico",
@@ -20,7 +22,8 @@ class SearchRecipesSkill:
         Busca y recomienda recetas basadas en el tipo de dieta y restricciones.
         """
         diet_type = context["diet_type"]
-        
+        kernel = context["kernel"]
+
         try:
             restrictions = json.loads(context["restrictions"])
         except json.JSONDecodeError:
@@ -51,28 +54,28 @@ class SearchRecipesSkill:
         
         Organiza las recetas en un array JSON con esta estructura:
         [
-            {
+            {{
                 "name": string (nombre de la receta),
                 "description": string (descripción breve),
                 "main_ingredients": [lista de ingredientes principales],
-                "macros": {
+                "macros": {{
                     "protein": float (gramos),
                     "carbs": float (gramos),
                     "fat": float (gramos)
-                },
+                }},
                 "calories_per_serving": float,
                 "prep_time_minutes": int,
                 "difficulty": "easy" | "medium" | "hard",
                 "meal_type": "breakfast" | "lunch" | "dinner" | "snack",
                 "tags": [lista de etiquetas relevantes]
-            }
+            }}
         ]
         
         Devuelve SOLO el array JSON, sin texto adicional.
         """
         
         # Obtener respuesta del modelo de lenguaje
-        response = await context.variables.kernel.memory.semantic_question(prompt)
+        response:str = OpenAIUtils.ai_semantic_question(kernel, prompt)
         
         # Procesar respuesta
         try:

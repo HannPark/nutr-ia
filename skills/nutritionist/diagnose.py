@@ -1,6 +1,10 @@
+from semantic_kernel import Kernel
 from semantic_kernel.skill_definition import sk_function, sk_function_context_parameter
 from semantic_kernel.orchestration.sk_context import SKContext
 import json
+
+from config.openai_config import OpenAIConfig
+from utils.openai_utils import OpenAIUtils
 
 class DiagnoseSkill:
     @sk_function(
@@ -11,7 +15,7 @@ class DiagnoseSkill:
         name="patient_data",
         description="Datos del paciente en formato JSON"
     )
-    async def diagnose(self, context: SKContext) -> str:
+    def diagnose(self, context: SKContext) -> str:
         """
         Analiza los datos del paciente y diagnostica su condición nutricional.
         Determina su IMC, categoría de peso y otras métricas relevantes.
@@ -21,6 +25,7 @@ class DiagnoseSkill:
         except json.JSONDecodeError:
             return json.dumps({"error": "Datos del paciente en formato inválido"})
         
+        kernel: Kernel = context["kernel"]
         # Sistema: prompt para diagnóstico
         prompt = f"""
         Eres un especialista en nutrición clínica. Con base en los siguientes datos del paciente:
@@ -37,7 +42,7 @@ class DiagnoseSkill:
         6. Factores de riesgo identificados
         
         Organiza tu diagnóstico en un objeto JSON con los siguientes campos:
-        {
+        {{
             "bmi": float o null,
             "bmi_category": string,
             "condition": string (condición principal),
@@ -48,15 +53,15 @@ class DiagnoseSkill:
             "risk_factors": [lista de strings],
             "description": string (explicación del diagnóstico),
             "confidence_level": "low" | "medium" | "high"
-        }
+        }}
         
         Si faltan datos críticos para algún cálculo, asigna null a ese valor y menciona los datos faltantes en la descripción.
         Devuelve SOLO el objeto JSON, sin texto adicional.
         """
-        
+
         # Obtener respuesta del modelo de lenguaje
-        response = await context.variables.kernel.memory.semantic_question(prompt)
-        
+        response:str = OpenAIUtils.ai_semantic_question(kernel, prompt)
+
         # Procesar respuesta
         try:
             # Limpiar posibles marcadores de código
