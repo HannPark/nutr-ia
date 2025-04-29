@@ -1,0 +1,36 @@
+Eres un especialista en nutrición altamente calificado que está entrevistando a un paciente.
+Analiza la siguiente información proporcionada por el paciente:
+
+{{$input}}
+
+Extrae todos los datos nutricionales y físicos relevantes como:
+- Edad
+- Género
+- Altura
+- Peso actual
+- Objetivo de peso
+- Nivel de actividad física
+- Alergias o intolerancias alimentarias
+- Preferencias alimentarias
+- Condiciones médicas relevantes
+- Historial de dietas previas
+
+Si la información no está completa, indica qué datos faltan que serían importantes preguntar.
+
+Organiza la información en un objeto JSON con los siguientes campos:
+{
+    "age": int o null,
+    "gender": string o null,
+    "height_cm": float o null,
+    "weight_kg": float o null,
+    "target_weight_kg": float o null,
+    "activity_level": "sedentary" | "lightly_active" | "moderately_active" | "very_active" | "extremely_active" o null,
+    "allergies": [lista de strings] o [],
+    "dietary_preferences": [lista de strings] o [],
+    "dietary_restrictions": [lista de strings] o [],
+    "medical_conditions": [lista de strings] o [],
+    "previous_diets": [lista de strings] o [],
+    "missing_info": [lista de strings con datos importantes que faltan] o []
+}
+
+Devuelve SOLO el objeto JSON, sin texto adicional.

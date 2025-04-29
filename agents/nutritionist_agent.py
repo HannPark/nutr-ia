@@ -6,7 +6,7 @@ from .base_agent import BaseAgent
 class NutritionistAgent(BaseAgent):
     def __init__(self):
         super().__init__("nutritionist", OpenAIConfig.NUTRITIONIST_MODEL)
-        self.skills = self.load_skills("skills/nutritionist_skills")
+        self.skills = self.load_skills("skills/nutritionist")
     
     async def diagnose_condition(self, patient_data):
         # Diagnosticar condición basado en datos del paciente

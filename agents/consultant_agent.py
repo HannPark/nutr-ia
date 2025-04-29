@@ -2,11 +2,20 @@ import json
 import semantic_kernel as sk
 from config.openai_config import OpenAIConfig
 from .base_agent import BaseAgent
+from skills.consultant.analyze_image import AnalyzeImageSkill
+from skills.consultant.gather_data import GatherDataSkill
 
 class ConsultantAgent(BaseAgent):
+
+
+
     def __init__(self):
+        self.native_skills = {
+            "analyze_image": AnalyzeImageSkill(),
+            "gather_data":GatherDataSkill()
+        }
         super().__init__("consultant", OpenAIConfig.CONSULTANT_MODEL)
-        self.skills = self.load_skills("skills/consultant_skills")
+        self.skills = self.load_skills("skills/",native=self.native_skills)
     
     async def collect_patient_data(self, patient_input):
         # Implementar lógica para recopilar datos del paciente

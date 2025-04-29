@@ -27,11 +27,22 @@ class BaseAgent:
             )
         )
     
-    def load_skills(self, skills_dir):
-        # Cargar habilidades desde directorio
-        skills = self.kernel.import_semantic_skill_from_directory(
-            skills_dir, self.name
-        )
+    def load_skills(self, skills_dir=None,native=None):
+        
+        skills = {}
+
+        if skills_dir:
+            semantic_skills = self.kernel.import_semantic_skill_from_directory(skills_dir, self.name)
+            skills.update(semantic_skills)
+
+        if native:
+            print(native)
+            for name, skill_instance in native.items():
+                imported_skill = self.kernel.import_skill(skill_instance, name)
+                skills.update(imported_skill)
+
+        print(skills)
+
         return skills
         
     async def process(self, input_data):
