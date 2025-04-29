@@ -2,11 +2,19 @@ import json
 import semantic_kernel as sk
 from config.openai_config import OpenAIConfig
 from .base_agent import BaseAgent
+from skills.nutritionist.create_diet import CreateDietSkill
+from skills.nutritionist.create_exercise_routine import CreateExerciseRoutineSkill
+from skills.nutritionist.diagnose import DiagnoseSkill
 
 class NutritionistAgent(BaseAgent):
     def __init__(self):
+        self.native_skills = {
+            "create_diet": CreateDietSkill(),
+            "create_exercise_routine":CreateExerciseRoutineSkill(),
+            "diagnose":DiagnoseSkill()
+        }
         super().__init__("nutritionist", OpenAIConfig.NUTRITIONIST_MODEL)
-        self.skills = self.load_skills("skills/nutritionist")
+        self.skills = self.load_skills("skills/",native=self.native_skills)
     
     async def diagnose_condition(self, patient_data):
         # Diagnosticar condición basado en datos del paciente
