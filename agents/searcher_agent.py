@@ -2,13 +2,17 @@ import json
 import semantic_kernel as sk
 from config.openai_config import OpenAIConfig
 from .base_agent import BaseAgent
-from skills.searcher.search_recipes import SearchRecipeSkill
+from skills.searcher.search_recipes import SearchRecipesSkill
 from skills.searcher.search_videos import SearchVideosSkill
 
 class SearcherAgent(BaseAgent):
     def __init__(self):
+        self.native_skills = {            
+            "search_recipes": SearchRecipesSkill(),
+            "search_videos":SearchVideosSkill()
+        }
         super().__init__("searcher", OpenAIConfig.SEARCHER_MODEL)
-        self.skills = self.load_skills("skills/searcher_skills")
+        self.skills = self.load_skills("skills/",native=self.native_skills)
     
     async def find_recipes(self, diet_type, restrictions):
         # Buscar recetas apropiadas
