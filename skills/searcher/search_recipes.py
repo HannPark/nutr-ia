@@ -75,7 +75,7 @@ class SearchRecipesSkill:
         """
         
         # Obtener respuesta del modelo de lenguaje
-        response:str = OpenAIUtils.ai_semantic_question(kernel, prompt)
+        response:str = await OpenAIUtils.ai_semantic_question(kernel, prompt)
         
         # Procesar respuesta
         try:

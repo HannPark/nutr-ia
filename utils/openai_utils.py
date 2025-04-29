@@ -4,6 +4,7 @@ from semantic_kernel.orchestration.sk_context import SKContext
 from config.openai_config import OpenAIConfig
 
 class OpenAIUtils:
+    @staticmethod
     async def ai_semantic_question(kernel: Kernel, prompt: str) -> str:
         """
         Utiliza el modelo de OpenAI para responder preguntas semánticas.

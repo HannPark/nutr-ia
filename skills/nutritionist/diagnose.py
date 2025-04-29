@@ -15,7 +15,7 @@ class DiagnoseSkill:
         name="patient_data",
         description="Datos del paciente en formato JSON"
     )
-    def diagnose(self, context: SKContext) -> str:
+    async def diagnose(self, context: SKContext) -> str:
         """
         Analiza los datos del paciente y diagnostica su condición nutricional.
         Determina su IMC, categoría de peso y otras métricas relevantes.
@@ -60,7 +60,7 @@ class DiagnoseSkill:
         """
 
         # Obtener respuesta del modelo de lenguaje
-        response:str = OpenAIUtils.ai_semantic_question(kernel, prompt)
+        response:str = await OpenAIUtils.ai_semantic_question(kernel, prompt)
 
         # Procesar respuesta
         try:

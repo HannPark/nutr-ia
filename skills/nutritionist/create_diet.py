@@ -19,7 +19,7 @@ class CreateDietSkill:
         name="diagnosis",
         description="Diagnóstico nutricional en formato JSON"
     )
-    def create_diet(self, context: SKContext) -> str:
+    async def create_diet(self, context: SKContext) -> str:
         """
         Crea un plan de dieta personalizado basado en los datos del paciente y su diagnóstico.
         """
@@ -81,7 +81,7 @@ class CreateDietSkill:
         """
         
         # Obtener respuesta del modelo de lenguaje
-        response:str = OpenAIUtils.ai_semantic_question(kernel, prompt)
+        response:str = await OpenAIUtils.ai_semantic_question(kernel, prompt)
         
         # Procesar respuesta
         try:

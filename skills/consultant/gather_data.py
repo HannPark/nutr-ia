@@ -15,7 +15,7 @@ class GatherDataSkill:
         name="input",
         description="Información inicial proporcionada por el paciente"
     )
-    def gather_data(self, context: SKContext) -> str:
+    async def gather_data(self, context: SKContext) -> str:
         """
         Recopila información nutricional completa del paciente basada en su input inicial.
         Realiza preguntas adicionales si es necesario y estructura los datos.
@@ -65,7 +65,7 @@ class GatherDataSkill:
 
         # Obtener respuesta del modelo de lenguaje
         # response = await context.variables.kernel.memory.semantic_question(prompt)
-        response:str = OpenAIUtils.ai_semantic_question(kernel, prompt)
+        response:str = await OpenAIUtils.ai_semantic_question(kernel, prompt)
 
         # Asegurar que la respuesta sea un JSON válido
         try:
