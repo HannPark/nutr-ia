@@ -2,6 +2,8 @@ import json
 import semantic_kernel as sk
 from config.openai_config import OpenAIConfig
 from .base_agent import BaseAgent
+from skills.searcher.search_recipes import SearchRecipeSkill
+from skills.searcher.search_videos import SearchVideosSkill
 
 class SearcherAgent(BaseAgent):
     def __init__(self):
