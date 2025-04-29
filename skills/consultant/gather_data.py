@@ -1,6 +1,9 @@
+from semantic_kernel import Kernel
 from semantic_kernel.skill_definition import sk_function, sk_function_context_parameter
 from semantic_kernel.orchestration.sk_context import SKContext
 import json
+
+from config.openai_config import OpenAIConfig
 
 class GatherDataSkill:
     @sk_function(
@@ -17,7 +20,7 @@ class GatherDataSkill:
         Realiza preguntas adicionales si es necesario y estructura los datos.
         """
         patient_input = context["input"]
-        
+        kernel: Kernel = context["kernel"]
         # Sistema: prompt para que el modelo actúe como un consultor nutricional
         prompt = f"""
         Eres un especialista en nutrición altamente calificado que está entrevistando a un paciente.
@@ -40,7 +43,7 @@ class GatherDataSkill:
         Si la información no está completa, indica qué datos faltan que serían importantes preguntar.
         
         Organiza la información en un objeto JSON con los siguientes campos:
-        {
+        {{
             "age": int o null,
             "gender": string o null,
             "height_cm": float o null,
@@ -53,18 +56,24 @@ class GatherDataSkill:
             "medical_conditions": [lista de strings] o [],
             "previous_diets": [lista de strings] o [],
             "missing_info": [lista de strings con datos importantes que faltan] o []
-        }
+        }}
         
         Devuelve SOLO el objeto JSON, sin texto adicional.
         """
 
         # Obtener respuesta del modelo de lenguaje
-        response = await context.variables.kernel.memory.semantic_question(prompt)
+        # response = await context.variables.kernel.memory.semantic_question(prompt)
+        completion_function = kernel.create_semantic_function(
+                prompt_template=prompt,
+                max_tokens=OpenAIConfig.MAX_TOKENS,
+                temperature=OpenAIConfig.TEMPERATURE
+            )
+        response = await completion_function.invoke_async()
         
         # Asegurar que la respuesta sea un JSON válido
         try:
             # Limpiar posibles marcadores de código que podrían haberse incluido
-            json_str = response.strip()
+            json_str = response.result.strip()
             if json_str.startswith("```json"):
                 json_str = json_str[7:]
             if json_str.endswith("```"):

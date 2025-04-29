@@ -6,9 +6,6 @@ from skills.consultant.analyze_image import AnalyzeImageSkill
 from skills.consultant.gather_data import GatherDataSkill
 
 class ConsultantAgent(BaseAgent):
-
-
-
     def __init__(self):
         self.native_skills = {
             "analyze_image": AnalyzeImageSkill(),
@@ -21,15 +18,16 @@ class ConsultantAgent(BaseAgent):
         # Implementar lógica para recopilar datos del paciente
         context = sk.ContextVariables()
         context["input"] = patient_input
-        
+        context["kernel"] = self.kernel
+
         # Usar la habilidad para hacer preguntas al paciente
-        result = await self.kernel.run_async(
+        skill_response = await self.kernel.run_async(
             self.skills["gather_data"],
             input_vars=context
         )
         
         # Procesar el resultado y crear un JSON estructurado
-        patient_data = json.loads(result)
+        patient_data = json.loads(skill_response.result)
         return patient_data
     
     async def analyze_screenshot(self, image_path):
