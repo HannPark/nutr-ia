@@ -12,8 +12,8 @@ aiohttp>=3.8.0 # Para peticiones HTTP asíncronas
 python-dotenv # Para cargar variables de entorno desde un archivo .env
 
 # PARA IMPLEMENTAR API POSTERIORMENTE
-# fastapi>=0.100.0 # Para crear una API RESTful
-# uvicorn>=0.23.0 # Servidor ASGI para FastAPI
-# python-multipart>=0.0.6 # Para manejar archivos subidos
-# websockets>=11.0.3 # Para manejar conexiones WebSocket
-# cors>=1.0.1 # Para manejar CORS en FastAPI
+fastapi>=0.100.0 # Para crear una API RESTful
+uvicorn>=0.23.0 # Servidor ASGI para FastAPI
+python-multipart>=0.0.6 # Para manejar archivos subidos
+websockets>=11.0.3 # Para manejar conexiones WebSocket
+cors>=1.0.1 # Para manejar CORS en FastAPI

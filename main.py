@@ -1,4 +1,3 @@
-# main.py
 import asyncio
 import json
 from agents.consultant_agent import ConsultantAgent

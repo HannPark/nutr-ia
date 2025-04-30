@@ -35,13 +35,14 @@ class ConsultantAgent(BaseAgent):
         # Esto podría usar OpenAI Vision API para analizar la composición corporal
         context = sk.ContextVariables()
         context["image_path"] = image_path
-        
-        result = await self.kernel.run_async(
+        context["kernel"] = self.kernel
+
+        skill_response = await self.kernel.run_async(
             self.skills["analyze_image"],
             input_vars=context
         )
         
-        image_data = json.loads(result)
+        image_data = json.loads(skill_response.result)
         return image_data
     
     async def process(self, patient_info, image_path=None):

@@ -51,6 +51,7 @@ class SearchRecipesSkill:
         - Calorías aproximadas por porción
         - Tiempo de preparación
         - Nivel de dificultad
+        - Paso a paso de la preparación
         
         Organiza las recetas en un array JSON con esta estructura:
         [
@@ -67,7 +68,9 @@ class SearchRecipesSkill:
                 "prep_time_minutes": int,
                 "difficulty": "easy" | "medium" | "hard",
                 "meal_type": "breakfast" | "lunch" | "dinner" | "snack",
-                "tags": [lista de etiquetas relevantes]
+                "tags": [lista de etiquetas relevantes],
+                "instructions": [paso a paso de la preparación],
+                url: string (enlace a la receta o video de preparación)
             }}
         ]
         

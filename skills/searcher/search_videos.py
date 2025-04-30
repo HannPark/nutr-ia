@@ -46,6 +46,7 @@ class SearchVideosSkill:
         - Duración aproximada
         - Autor/Canal (hipotético pero realista)
         - Puntos clave que cubre
+        - Enlace al video (si es posible)
         
         Organiza las recomendaciones en un array JSON con esta estructura:
         [
@@ -57,7 +58,8 @@ class SearchVideosSkill:
                 "key_points": [lista de puntos clave que cubre],
                 "recommended_for": [tipos de pacientes que se beneficiarían],
                 "expertise_level": "beginner" | "intermediate" | "advanced",
-                "tags": [lista de etiquetas relevantes]
+                "tags": [lista de etiquetas relevantes],
+                "url": string (enlace al video)
             }}
         ]
         
