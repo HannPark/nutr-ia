@@ -14,5 +14,5 @@ class OpenAIUtils:
                 max_tokens=OpenAIConfig.MAX_TOKENS,
                 temperature=OpenAIConfig.TEMPERATURE
             )
-        response = await completion_function.invoke_async()
+        response: SKContext = await completion_function.invoke_async()
         return response.result

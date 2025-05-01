@@ -39,12 +39,9 @@ class BaseAgent:
             skills.update(semantic_skills)
 
         if native:
-            # print(native)
             for name, skill_instance in native.items():
                 imported_skill = self.kernel.import_skill(skill_instance, name)
                 skills.update(imported_skill)
-
-        # print(skills)
 
         return skills
         

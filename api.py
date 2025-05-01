@@ -1,5 +1,5 @@
 # api.py
-from fastapi import FastAPI, UploadFile, File, Form, WebSocket
+from fastapi import FastAPI, Request, UploadFile, File, Form, WebSocket, WebSocketDisconnect
 from fastapi.middleware.cors import CORSMiddleware
 import uvicorn
 import json
@@ -7,6 +7,7 @@ import os
 from agents.consultant_agent import ConsultantAgent
 from agents.nutritionist_agent import NutritionistAgent
 from agents.searcher_agent import SearcherAgent
+from models.user_data import UserData
 
 app = FastAPI(title="NUTR-IA API")
 
@@ -24,7 +25,9 @@ consultant = ConsultantAgent()
 nutritionist = NutritionistAgent()
 searcher = SearcherAgent()
 
-@app.post("/api/patient-assessment")
+active_connections = {}
+
+@app.post("/api/assessment")
 async def assess_patient(
     patient_info: str = Form(...),
     image: UploadFile = File(None)
@@ -42,7 +45,7 @@ async def assess_patient(
         # 1. Agente Consultor recopila datos
         print("1. Agente Consultor recopilando datos...")
         patient_data = await consultant.process(patient_info, image_path)
-        
+        print("tipo de paciente::", type(patient_data))
         # 2. Agente Nutriólogo genera diagnóstico y plan
         print("\n2. Agente Nutriólogo generando diagnóstico y plan...")
         nutritionist_result = await nutritionist.process(patient_data)
@@ -111,6 +114,58 @@ async def websocket_endpoint(websocket: WebSocket):
         await websocket.send_json({"status": "error", "message": str(e)})
     finally:
         await websocket.close()
+
+@app.websocket("/ws/chat/{client_id}")
+async def websocket_chat(websocket: WebSocket, client_id: str):
+    await websocket.accept()
+    active_connections[client_id] = websocket
+    # Inicializar el agente y los datos del usuario
+    user_data = UserData()
+    try:
+        await consultant.process_chat(websocket, user_data)
+    except WebSocketDisconnect:
+        if client_id in active_connections:
+            del active_connections[client_id]
+    except Exception as e:
+        # Enviar mensaje de error
+        await websocket.send_json({
+            "sender": "system",
+            "message": f"Error: {str(e)}"
+        })
+        # Cerrar conexión
+        if client_id in active_connections:
+            del active_connections[client_id]
+
+@app.post("/api/assessment-with-data")
+async def assess_patient_with_data(
+    request: Request
+):
+    """Endpoint para iniciar una evaluación de paciente."""
+    try:
+        patient_info = await request.json()
+        
+        print("\n1. patient_info::", patient_info)
+        print("tipo de paciente::", type(patient_info))
+        # 2. Agente Nutriólogo genera diagnóstico y plan
+        print("\n2. Agente Nutriólogo generando diagnóstico y plan...")
+        nutritionist_result = await nutritionist.process(patient_info)
+        
+        # 3. Agente Buscador encuentra recursos
+        print("\n3. Agente Buscador encontrando recursos...")
+        search_resources = await searcher.process(nutritionist_result["search_request"])
+        
+        # 4. Compilar respuesta final
+        final_result = {
+            "patient_data": patient_info,
+            "diagnosis": nutritionist_result["diagnosis"],
+            "diet_plan": nutritionist_result["diet_plan"],
+            "exercise_routine": nutritionist_result["exercise_routine"],
+            "recipes": search_resources["recipes"],
+            "videos": search_resources["videos"]
+        }
+        return final_result
+    except Exception as e:
+        return {"error": str(e)}
 
 # Punto de entrada para ejecutar la API
 if __name__ == "__main__":
