@@ -28,11 +28,8 @@ class ExtractUserInfoSkill:
     )
     async def extract_user_info(self, context: SKContext) -> str:
         input = context["input"]
-        print("Input::", input)
         user_message = context["respuesta_paciente"]
-        print("User message::", user_message)
         campo_respuesta = context["campo_respuesta"]
-        print("Campo respuesta::", campo_respuesta)
         # Obtener el kernel del contexto
         kernel: Kernel = context["kernel"]
         # Sistema: prompt para que el modelo actúe como un consultor nutricional
@@ -70,7 +67,6 @@ class ExtractUserInfoSkill:
         # Obtener respuesta del modelo de lenguaje
         # response = await context.variables.kernel.memory.semantic_question(prompt)
         response:str = await OpenAIUtils.ai_semantic_question(kernel, prompt)
-        print("Response::", response)
 
         # Asegurar que la respuesta sea un JSON válido
         try:
